@@ -27,6 +27,7 @@ package genetik.example
 import genetik.Chromosome
 import genetik.Codec
 import genetik.Evolution
+import genetik.Phenotype
 import genetik.crossover.MultiPointCrossover
 import genetik.selection.TournamentSelection
 
@@ -63,6 +64,7 @@ class Characters private constructor(string: String) {
 
 val target = "A man who dares to waste one hour of time has not discovered the value of life (cit. Charles Darwin)"
 
+
 fun eval(chromosome: Chromosome): Double {
     val c = Characters.encode(chromosome)
 
@@ -74,20 +76,32 @@ fun eval(chromosome: Chromosome): Double {
     return score
 }
 
+fun observer(generation: Int, population: List<Phenotype>): Boolean {
+    val best = population.maxBy { it.fitness }
+
+    if (eval(best!!.chromosome).toInt() == target.length) {
+        println(String.format("Stopped at generation %d", generation))
+        return false
+    }
+
+    return true
+}
+
 fun main(args: Array<String>) {
     val evolution = Evolution.of(
-            size = 500,
+            size = 250,
             chromosomeLength = target.length,
             geneLength = 1,
             fitness = ::eval
     )
 
     val population = evolution.run(
-            iteration = 7500,
-            elitismRatio = .15f,
-            selector = TournamentSelection(10),
-            crossover = MultiPointCrossover(2),
-            mutationProbability = .05f
+            iteration = 1000,
+            elitismRatio = .1f,
+            selector = TournamentSelection(25),
+            crossover = MultiPointCrossover(5),
+            mutationProbability = .025f,
+            observer = ::observer
     )
 
     val solution = population.maxBy { it.fitness }
