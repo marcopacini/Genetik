@@ -24,29 +24,28 @@
 
 package genetik.crossover
 
-import genetik.crossover.Crossover
 import genetik.Chromosome
 import genetik.Gene
 
-open class MultiPointCrossover(n: Int): Crossover {
-    val pivotsNumber: Int = n
+import java.util.Random
+
+class UniformCrossover(probability: Float = .5f): Crossover {
+    val p: Float = probability
 
     override fun crossover(mother: Chromosome, father: Chromosome): Array<Chromosome> {
-        // Argument validation
         if (mother.genes.size != father.genes.size)
             throw IllegalArgumentException()
 
-        val sources = arrayListOf<Chromosome>(mother, father)
-        val pivots = Array(pivotsNumber, { _ -> Chromosome.random.nextInt(mother.genes.size) }).sortedArray()
-
         val childrenGenes = Pair(mutableListOf<Gene>(), mutableListOf<Gene>())
 
-        var p = 0
         for (i: Int in mother.genes.indices) {
-            if (p < pivots.size && i >= pivots[p]) p++
-
-            childrenGenes.first.add(sources[p % sources.size].genes[i].clone())
-            childrenGenes.second.add(sources[(p + 1) % sources.size].genes[i].clone())
+            if (random.nextFloat() < p) {
+                childrenGenes.first.add(mother.genes[i].clone())
+                childrenGenes.second.add(father.genes[i].clone())
+            } else {
+                childrenGenes.first.add(father.genes[i].clone())
+                childrenGenes.second.add(mother.genes[i].clone())
+            }
         }
 
         val geneLength = mother.geneLength
@@ -57,4 +56,7 @@ open class MultiPointCrossover(n: Int): Crossover {
         )
     }
 
+    companion object {
+        val random = Random()
+    }
 }

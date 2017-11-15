@@ -29,6 +29,7 @@ import genetik.Codec
 import genetik.Evolution
 import genetik.Phenotype
 import genetik.crossover.MultiPointCrossover
+import genetik.crossover.UniformCrossover
 import genetik.selection.TournamentSelection
 
 class Characters private constructor(string: String) {
@@ -99,7 +100,7 @@ fun main(args: Array<String>) {
             iteration = 1000,
             elitismRatio = .1f,
             selector = TournamentSelection(25),
-            crossover = MultiPointCrossover(5),
+            crossover = UniformCrossover(),
             mutationProbability = .025f,
             observer = ::observer
     )
